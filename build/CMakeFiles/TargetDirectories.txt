@@ -1,0 +1,2 @@
+/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/testdisplay.dir
+/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir

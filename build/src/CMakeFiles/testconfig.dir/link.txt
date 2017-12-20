@@ -1,0 +1,1 @@
+g++    -std=c++11   CMakeFiles/testconfig.dir/TestConfigurator.cpp.o  -o ../../bin/testconfig -rdynamic 

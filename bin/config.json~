@@ -1,0 +1,12 @@
+{
+    "InputSize": [320, 240],
+    "Camera": [100, 100, 160, 120],
+    "NearPlane": 0.001,
+    "IterationSize": [10, 5, 5],
+    "RGBFramePrefix": "",
+    "RGBFrameSuffix": ".ppm",
+    "DepthFramePrefix": "",
+    "DepthFrameSuffix": ".pgm",
+    "FrameIndexHead": 0,
+    "FrameIndexTail": 500,
+}
