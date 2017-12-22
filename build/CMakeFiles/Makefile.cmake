@@ -23,6 +23,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/local/share/cmake-3.4/Modules/CMakeCInformation.cmake"
   "/usr/local/share/cmake-3.4/Modules/CMakeCXXInformation.cmake"
   "/usr/local/share/cmake-3.4/Modules/CMakeCommonLanguageInclude.cmake"
+  "/usr/local/share/cmake-3.4/Modules/CMakeFindDependencyMacro.cmake"
   "/usr/local/share/cmake-3.4/Modules/CMakeGenericSystem.cmake"
   "/usr/local/share/cmake-3.4/Modules/CMakeParseArguments.cmake"
   "/usr/local/share/cmake-3.4/Modules/CMakeSystemSpecificInformation.cmake"
@@ -45,6 +46,9 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/local/share/cmake-3.4/Modules/Platform/Linux-GNU.cmake"
   "/usr/local/share/cmake-3.4/Modules/Platform/Linux.cmake"
   "/usr/local/share/cmake-3.4/Modules/Platform/UnixPaths.cmake"
+  "/usr/local/share/sophus/cmake/SophusConfig.cmake"
+  "/usr/local/share/sophus/cmake/SophusConfigVersion.cmake"
+  "/usr/local/share/sophus/cmake/SophusTargets.cmake"
   )
 
 # The corresponding makefile is:

@@ -4,6 +4,9 @@
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 
+#include "sophus/so3.hpp"
+#include "sophus/se3.hpp"
+
 #include <cmath>
 
 #include "cutil_math.h"
@@ -12,13 +15,21 @@
 
 typedef Eigen::Affine3f Affine3f;
 
+typedef Eigen::Matrix<float, 3, 4> Matrix3x4f;
+
+typedef Eigen::Matrix<float, 6, 6> Matrix6f;
 typedef Eigen::Matrix<float, 4, 4> Matrix4f;
 typedef Eigen::Matrix<float, 3, 3> Matrix3f;
 
+typedef Eigen::Matrix<float, 32, 1> Vector32f;
+typedef Eigen::Matrix<float, 27, 1> Vector27f;
+typedef Eigen::Matrix<float, 21, 1> Vector21f;
+typedef Eigen::Matrix<float, 6, 1> Vector6f;
 typedef Eigen::Matrix<float, 4, 1> Vector4f;
 typedef Eigen::Matrix<float, 3, 1> Vector3f;
 
 typedef Eigen::AngleAxisf AngleAxisf;
+typedef Eigen::Quaternion<float> Quaternionf;
 
 /*
 inline __host__ __device__ float3 operator*(const Affine3f & C, const float3 & p) {
@@ -36,6 +47,13 @@ inline __host__ __device__ float3 operator*(const Matrix3f & M, const float3 & p
     return res;
 }
 
+inline __host__ __device__ float3 operator*(const Matrix3x4f & M, const float3 &p) {
+    float3 res;
+    Eigen::Map<Vector3f> res_map(reinterpret_cast<float*>(&res));
+    res_map = M.block(0, 0, 3, 3) * Eigen::Map<const Vector3f>(reinterpret_cast<const float*>(&p)) + M.block(0, 3, 3,  1);
+    return res;
+}
+
 inline __host__ __device__ float3 rotate(const Matrix4f & M, const float3 & p) {
     float3 res;
     Eigen::Map<Vector3f> res_map(reinterpret_cast<float*>(&res));
@@ -48,6 +66,37 @@ inline __host__ __device__ float3 transform(const Matrix4f & M, const float3 & p
     Eigen::Map<Vector3f> res_map(reinterpret_cast<float*>(&res));
     res_map = M.block(0, 0, 3, 3) * Eigen::Map<const Vector3f>(reinterpret_cast<const float*>(&p)) + M.block(0, 3, 3,  1);
     return res;
+}
+
+inline __host__ __device__ Matrix4f combine_intrinsics(const Matrix3f & K, const Matrix4f & M) {
+    Matrix4f res = Matrix4f::Identity();
+    res.block(0, 0, 3, 3) = K * M.block(0, 0, 3, 3);
+    res.block(0, 3, 3, 1) = K * M.block(0, 3, 3, 1);
+    return res;
+}
+
+inline Matrix6f make_jtj(const Vector21f & v) {
+    Matrix6f res = Matrix6f::Zero();
+    res.block(0, 0, 1, 6) = v.segment(0, 6);
+    res.block(1, 0, 1, 5) = v.segment(6, 5);
+    res.block(2, 0, 1, 4) = v.segment(11, 4);
+    res.block(3, 0, 1, 3) = v.segment(15, 3);
+    res.block(4, 0, 1, 2) = v.segment(18, 2);
+    res(5, 5) = v(20);
+
+    for (int r = 1; r < 6; r++) {
+        for (int c = 0; c < r; c++) {
+            res(r, c) = res(c, r);
+        }
+    }
+    return res;
+}
+
+inline Vector6f solve(const Vector27f & v) {
+    Vector6f b = v.segment(0, 6);
+    Matrix6f M = make_jtj(v.segment(6, 21));
+
+    return M.jacobiSvd(Eigen::ComputeFullV).matrixV().col(5);
 }
 
 /*

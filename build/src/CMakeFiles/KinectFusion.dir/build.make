@@ -307,6 +307,12 @@ src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../3rd
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../3rdparty/Eigen/src/plugins/CommonCwiseUnaryOps.h
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../3rdparty/Eigen/src/plugins/MatrixCwiseBinaryOps.h
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../3rdparty/Eigen/src/plugins/MatrixCwiseUnaryOps.h
+src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../3rdparty/sophus/common.hpp
+src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../3rdparty/sophus/rotation_matrix.hpp
+src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../3rdparty/sophus/se3.hpp
+src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../3rdparty/sophus/so2.hpp
+src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../3rdparty/sophus/so3.hpp
+src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../3rdparty/sophus/types.hpp
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../src/KinectFusion.cu
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../src/KinectFusion.h
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../src/Utility/CudaToolKit.h
@@ -598,7 +604,7 @@ src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: src/CM
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o: ../src/KinectFusion.cu
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/drinkingcoder/Documents/Code/KinectFusion/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building NVCC (Device) object src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o"
 	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir && /usr/local/bin/cmake -E make_directory /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//.
-	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir && /usr/local/bin/cmake -D verbose:BOOL=$(VERBOSE) -D build_configuration:STRING= -D generated_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_KinectFusion.cu.o -D generated_cubin_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_KinectFusion.cu.o.cubin.txt -P /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_KinectFusion.cu.o.cmake
+	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir && /usr/local/bin/cmake -D verbose:BOOL=$(VERBOSE) -D build_configuration:STRING=Debug -D generated_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_KinectFusion.cu.o -D generated_cubin_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_KinectFusion.cu.o.cubin.txt -P /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_KinectFusion.cu.o.cmake
 
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_Volume.cu.o: ../src/Utility/CudaToolKit.h
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_Volume.cu.o: ../src/Utility/cutil_math.h
@@ -820,7 +826,7 @@ src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_Volume.cu.o: src/CMakeFil
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_Volume.cu.o: ../src/Volume.cu
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/drinkingcoder/Documents/Code/KinectFusion/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building NVCC (Device) object src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_Volume.cu.o"
 	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir && /usr/local/bin/cmake -E make_directory /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//.
-	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir && /usr/local/bin/cmake -D verbose:BOOL=$(VERBOSE) -D build_configuration:STRING= -D generated_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_Volume.cu.o -D generated_cubin_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_Volume.cu.o.cubin.txt -P /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_Volume.cu.o.cmake
+	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir && /usr/local/bin/cmake -D verbose:BOOL=$(VERBOSE) -D build_configuration:STRING=Debug -D generated_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_Volume.cu.o -D generated_cubin_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_Volume.cu.o.cubin.txt -P /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_Volume.cu.o.cmake
 
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_helpers.cu.o: ../src/Utility/CudaToolKit.h
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_helpers.cu.o: ../src/Utility/cutil_math.h
@@ -1037,7 +1043,7 @@ src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_helpers.cu.o: src/CMakeFi
 src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_helpers.cu.o: ../src/helpers.cu
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/drinkingcoder/Documents/Code/KinectFusion/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building NVCC (Device) object src/CMakeFiles/KinectFusion.dir/KinectFusion_generated_helpers.cu.o"
 	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir && /usr/local/bin/cmake -E make_directory /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//.
-	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir && /usr/local/bin/cmake -D verbose:BOOL=$(VERBOSE) -D build_configuration:STRING= -D generated_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_helpers.cu.o -D generated_cubin_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_helpers.cu.o.cubin.txt -P /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_helpers.cu.o.cmake
+	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir && /usr/local/bin/cmake -D verbose:BOOL=$(VERBOSE) -D build_configuration:STRING=Debug -D generated_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_helpers.cu.o -D generated_cubin_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//./KinectFusion_generated_helpers.cu.o.cubin.txt -P /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_helpers.cu.o.cmake
 
 src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/Configurator/Configurator.h
 src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/Configurator/JsonParser.h
@@ -1289,6 +1295,12 @@ src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator
 src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/Eigen/src/plugins/CommonCwiseUnaryOps.h
 src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/Eigen/src/plugins/MatrixCwiseBinaryOps.h
 src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/Eigen/src/plugins/MatrixCwiseUnaryOps.h
+src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/sophus/common.hpp
+src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/sophus/rotation_matrix.hpp
+src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/sophus/se3.hpp
+src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/sophus/so2.hpp
+src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/sophus/so3.hpp
+src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../3rdparty/sophus/types.hpp
 src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../src/Utility/CudaToolKit.h
 src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../src/Utility/LocalConfigurator.cu
 src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../src/Utility/LocalConfigurator.h
@@ -1578,7 +1590,7 @@ src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator
 src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o: ../src/Utility/LocalConfigurator.cu
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/drinkingcoder/Documents/Code/KinectFusion/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building NVCC (Device) object src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o"
 	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility && /usr/local/bin/cmake -E make_directory /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility/.
-	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility && /usr/local/bin/cmake -D verbose:BOOL=$(VERBOSE) -D build_configuration:STRING= -D generated_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility/./KinectFusion_generated_LocalConfigurator.cu.o -D generated_cubin_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility/./KinectFusion_generated_LocalConfigurator.cu.o.cubin.txt -P /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o.cmake
+	cd /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility && /usr/local/bin/cmake -D verbose:BOOL=$(VERBOSE) -D build_configuration:STRING=Debug -D generated_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility/./KinectFusion_generated_LocalConfigurator.cu.o -D generated_cubin_file:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility/./KinectFusion_generated_LocalConfigurator.cu.o.cubin.txt -P /home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o.cmake
 
 src/CMakeFiles/KinectFusion.dir/Visualizer.cc.o: src/CMakeFiles/KinectFusion.dir/flags.make
 src/CMakeFiles/KinectFusion.dir/Visualizer.cc.o: ../src/Visualizer.cc

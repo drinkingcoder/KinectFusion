@@ -17,9 +17,8 @@
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
 
-//Choose the type of build, options are: None(CMAKE_CXX_FLAGS or
-// CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.
-CMAKE_BUILD_TYPE:STRING=
+//Variable supplied by CMakeTools. Value is forced.
+CMAKE_BUILD_TYPE:STRING=Debug
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -77,8 +76,8 @@ CMAKE_EXE_LINKER_FLAGS_RELEASE:STRING=
 //Flags used by the linker during Release with Debug Info builds.
 CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
-//Enable/Disable output of compile commands during generation.
-CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=OFF
+//Variable supplied by CMakeTools. Value is forced.
+CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE
 
 //Install path prefix, prepended onto install directories.
 CMAKE_INSTALL_PREFIX:PATH=/usr/local
@@ -103,6 +102,9 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
 
 //Flags used by the linker during Release with Debug Info builds.
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
+
+//Variable supplied by CMakeTools. Value is forced.
+CMAKE_MODULE_PATH:STRING=/home/drinkingcoder/Documents/Code/KinectFusion/build/CMakeTools
 
 //Path to a program.
 CMAKE_NM:FILEPATH=/usr/bin/nm
@@ -159,9 +161,6 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 //Path to a program.
 CMAKE_STRIP:FILEPATH=/usr/bin/strip
 
-//If true, cmake will use relative paths in makefiles and projects.
-CMAKE_USE_RELATIVE_PATHS:BOOL=OFF
-
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
 // during the make.  This is useful for debugging only. With Visual
@@ -195,7 +194,7 @@ CUDA_GENERATED_OUTPUT_DIR:PATH=
 CUDA_HOST_COMPILATION_CPP:BOOL=ON
 
 //Host side compiler used by NVCC
-CUDA_HOST_COMPILER:FILEPATH=/usr/bin/gcc-4.8
+CUDA_HOST_COMPILER:FILEPATH=/usr/bin/cc
 
 //Path to a program.
 CUDA_NVCC_EXECUTABLE:FILEPATH=/usr/local/cuda-8.0/bin/nvcc
@@ -336,8 +335,8 @@ OpenCV_LIB_DIR_DBG:PATH=
 //Path where release OpenCV libraries are located
 OpenCV_LIB_DIR_OPT:PATH=
 
-//The directory containing a CMake configuration file for Pangolin.
-Pangolin_DIR:PATH=/home/drinkingcoder/Documents/Libs/Pangolin/build/src
+//The directory containing a CMake configuration file for Sophus.
+Sophus_DIR:PATH=/usr/local/share/sophus/cmake
 
 
 ########################
@@ -418,7 +417,7 @@ CMAKE_HAVE_PTHREADS_CREATE:INTERNAL=
 CMAKE_HAVE_PTHREAD_CREATE:INTERNAL=1
 //Have include pthread.h
 CMAKE_HAVE_PTHREAD_H:INTERNAL=1
-//Start directory with the top level CMakeLists.txt file for this
+//Source directory with the top level CMakeLists.txt file for this
 // project
 CMAKE_HOME_DIRECTORY:INTERNAL=/home/drinkingcoder/Documents/Code/KinectFusion
 //Install .so files without execute permission.
@@ -439,8 +438,6 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
-//number of local generators
-CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=2
 //number of local generators
 CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
@@ -479,15 +476,13 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 CMAKE_STRIP-ADVANCED:INTERNAL=1
 //uname command
 CMAKE_UNAME:INTERNAL=/bin/uname
-//ADVANCED property for variable: CMAKE_USE_RELATIVE_PATHS
-CMAKE_USE_RELATIVE_PATHS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CUDA_64_BIT_DEVICE_CODE
 CUDA_64_BIT_DEVICE_CODE-ADVANCED:INTERNAL=1
 //List of intermediate files that are part of the cuda dependency
 // scanning.
-CUDA_ADDITIONAL_CLEAN_FILES:INTERNAL=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_helpers.cu.o.depend;/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_KinectFusion.cu.o.depend;/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_Volume.cu.o.depend;/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o.depend
+CUDA_ADDITIONAL_CLEAN_FILES:INTERNAL=/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_KinectFusion.cu.o.depend;/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_Volume.cu.o.depend;/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir//KinectFusion_generated_helpers.cu.o.depend;/home/drinkingcoder/Documents/Code/KinectFusion/build/src/CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o.depend
 //ADVANCED property for variable: CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE
 CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CUDA_BUILD_CUBIN

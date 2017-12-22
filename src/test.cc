@@ -6,7 +6,6 @@
 #define CONFIG_FILE "config.json"
 
 using namespace std;
-//using namespace TooN;
 
 void SetImageGreen(uchar4 *image, uint2 size) {
     for (auto i = 0; i < size.y; i++) {

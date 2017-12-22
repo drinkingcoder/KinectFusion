@@ -28,10 +28,15 @@ struct Parameters {
     char FrameIndexFilledWithCharacter;
     int FrameIndexWidth;
 
+    int GaussianRadius = 2;
+    float GaussianFunctionSigma = 4.0f;
+    float GaussianIlluminanceSigma = 0.1f;
+
     std::string CalibrationFile, FramePath;
     dim3 ImageBlock;
 
-	size_t ICPIterationTimes;
+    std::vector<int> ICPIterationTimes;
+    int ICPLevels = 3;
 
 };
 
@@ -97,6 +102,11 @@ public:
         tmp_depth.Allocate(parameters.InputSize);
 
         m_parameters.ImageBlock = dim3(32, 16);
+
+        m_parameters.ICPIterationTimes.resize(3);
+        m_parameters.ICPIterationTimes[0] = 10;
+        m_parameters.ICPIterationTimes[1] = 5;
+        m_parameters.ICPIterationTimes[2] = 5;
 	}
 
     // rgb - uchar4

@@ -10,18 +10,27 @@
 #include "Utility/LocalConfigurator.h"
 #include "Volume.h"
 
+#define INVALID -2
+
 class KinectFusion {
 public:
     Parameters m_parameters;
     Volume m_volume;
     Image<TrackData, DeviceAllocator> m_reduction;
+    Image<float, DeviceAllocator> m_raw_depth;
     Image<float3, DeviceAllocator> m_vertex, m_normal;
 
-    Image<float, DeviceAllocator> m_raw_depth;
+    std::vector<Image<float, DeviceAllocator>> m_input_depth;
+    std::vector<Image<float3, DeviceAllocator>> m_input_normal, m_input_vertex;
+
     Image<float, HostDeviceAllocator> m_output;
+    Image<float, HostDeviceAllocator> m_ba_values;
+
+    Image<float, DeviceAllocator> m_gaussian;
 
     Matrix4f m_pose, m_raycast_pose;
     Matrix3f m_cameraK;
+    std::vector<Matrix3f> m_inv_cameraKs;
 
     KinectFusion(const Parameters& parameters);
     virtual ~KinectFusion() {
@@ -37,6 +46,7 @@ public:
         }
 
     void Integrate();
+    bool Track();
 
     /// just raycast
     void Raycast();
@@ -53,12 +63,12 @@ public:
 
     float StepSize() const {
         return 0.007;
-        return min(m_parameters.VolumeDimensions) / max(m_parameters.VolumeSize);
+        //return min(m_parameters.VolumeDimensions) / max(m_parameters.VolumeSize);
     }
     float LargeStepSize() const {
 //        return 0.007;
         return 0.01;
-        return 0.7f * m_parameters.FusionThreshold;
+//        return 0.7f * m_parameters.FusionThreshold;
     }
 protected:
 private:
