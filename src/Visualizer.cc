@@ -8,6 +8,8 @@ std::mutex Visualizer::rgb_mutex;
 Image<float3, HostDeviceAllocator> Visualizer::m_vertex;
 Image<float, HostDeviceAllocator> Visualizer::m_depth;
 Image<uchar4, HostDeviceAllocator> Visualizer::m_rgb;
+Image<float3, HostDeviceAllocator> Visualizer::m_show;
+Image<float3, HostDeviceAllocator> Visualizer::m_show2;
 
 using namespace std;
 namespace {
@@ -27,7 +29,10 @@ void Visualizer::display() {
     glDrawPixels(m_rgb);
     glRasterPos2i(params.InputSize.x, 0);
     glDrawPixels(m_depth);
-
+    glRasterPos2i(0, params.InputSize.y);
+    glDrawPixels(m_show);
+    glRasterPos2i(params.InputSize.x, params.InputSize.y);
+    glDrawPixels(m_show2);
     glutSwapBuffers();
 }
 
@@ -78,6 +83,8 @@ void Visualizer::Setup() {
     GLSetup();
     m_rgb.Allocate(input_size);
     m_depth.Allocate(input_size);
+    m_show.Allocate(input_size);
+    m_show2.Allocate(input_size);
 
     terminated = false;
 }
@@ -108,9 +115,13 @@ void Visualizer::UpdateWindowWithRGBAndDepth(void * rgb, void * depth) {
 
 void Visualizer::UpdateWindowWithRGBAndDepthOnDevice(
         Image<uchar4, HostDeviceAllocator> &rgb,
-        Image<float, HostDeviceAllocator> &depth
+        Image<float, HostDeviceAllocator> &depth,
+        Image<float3, DeviceAllocator> & show,
+        Image<float3, DeviceAllocator> & show2
         ) {
     lock_guard<mutex> guard(rgb_mutex);
     m_depth = depth;
     m_rgb = rgb;
+    m_show = show;
+    m_show2 = show2;
 }

@@ -50,20 +50,9 @@ public:
 
     /// just raycast
     void Raycast();
-    /// figure out the raycast map originated from view for visualization
-    void RenderInput(Image<float3> pos3D,
-//                        Image<float3> normal,
-                        Image<float> depth,
-                        const Volume volume,
-                        const Matrix4f view,
-                        const float near_plane,
-                        const float far_plane,
-                        const float step,
-                        const float large_step);
 
     float StepSize() const {
-        return 0.007;
-        //return min(m_parameters.VolumeDimensions) / max(m_parameters.VolumeSize);
+        return min(m_parameters.VolumeDimensions) / max(m_parameters.VolumeSize);
     }
     float LargeStepSize() const {
 //        return 0.007;

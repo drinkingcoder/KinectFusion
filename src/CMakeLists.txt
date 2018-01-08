@@ -21,5 +21,4 @@ target_link_libraries(testdisplay
                         ${GLUT_LIBRARIES}
                         ${OPENGL_LIBRARIES}
                         ${OpenCV_LIBRARIES}
-                        ${Sophus_LIBRARIES}
                         )

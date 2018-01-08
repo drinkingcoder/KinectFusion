@@ -1,11 +1,8 @@
 #pragma once
 
+#include <Eigen/Core>
 #include <Eigen/Eigen>
 #include <Eigen/Geometry>
-#include <Eigen/Core>
-
-#include "sophus/so3.hpp"
-#include "sophus/se3.hpp"
 
 #include <cmath>
 
@@ -75,20 +72,41 @@ inline __host__ __device__ Matrix4f combine_intrinsics(const Matrix3f & K, const
     return res;
 }
 
+inline Matrix3f cross_dot_matrix(const Vector3f & v) {
+    Matrix3f res = Matrix3f::Zero();
+    res(0, 1) = -v(2);
+    res(1, 0) = v(2);
+    res(0, 2) = v(1);
+    res(2, 0) = -v(1);
+    res(1, 2) = -v(0);
+    res(2, 1) = v(0);
+    return res;
+}
+
 inline Matrix6f make_jtj(const Vector21f & v) {
+    /*
+    std::cout << "make_jtj Input Vector : " << std::endl;
+    std::cout << v << std::endl;
+    */
     Matrix6f res = Matrix6f::Zero();
-    res.block(0, 0, 1, 6) = v.segment(0, 6);
-    res.block(1, 0, 1, 5) = v.segment(6, 5);
-    res.block(2, 0, 1, 4) = v.segment(11, 4);
-    res.block(3, 0, 1, 3) = v.segment(15, 3);
-    res.block(4, 0, 1, 2) = v.segment(18, 2);
+    res.block(0, 0, 6, 1) = v.segment(0, 6);
+    res.block(1, 1, 5, 1) = v.segment(6, 5);
+    res.block(2, 2, 4, 1) = v.segment(11, 4);
+    res.block(3, 3, 3, 1) = v.segment(15, 3);
+    res.block(4, 4, 2, 1) = v.segment(18, 2);
     res(5, 5) = v(20);
 
+    /*
+    std::cout << "make_jtj before fill transpose : " << std::endl;
+    std::cout << res << std::endl;
+    */
     for (int r = 1; r < 6; r++) {
         for (int c = 0; c < r; c++) {
-            res(r, c) = res(c, r);
+            res(c, r) = res(r, c);
         }
     }
+    std::cout << "JTJ = " << std::endl;
+    std::cout << res << std::endl;
     return res;
 }
 
@@ -96,7 +114,47 @@ inline Vector6f solve(const Vector27f & v) {
     Vector6f b = v.segment(0, 6);
     Matrix6f M = make_jtj(v.segment(6, 21));
 
-    return M.jacobiSvd(Eigen::ComputeFullV).matrixV().col(5);
+    return M.ldlt().solve(b);
+}
+
+// [translation-vector rotation-vector]
+inline Matrix4f exp(const Vector6f & v) {
+    Matrix4f res = Matrix4f::Zero();
+    Vector3f rot_v = v.segment(3, 3);
+    const float theta = rot_v.norm();
+    rot_v = rot_v.normalized();
+
+    Matrix3f J = sin(theta) / theta * Matrix3f::Identity()
+                    + (1 - sin(theta) / theta) * rot_v * rot_v.transpose()
+                    + (1 - cos(theta)) / theta * cross_dot_matrix(rot_v);
+
+    std::cout << "rot_v = " << rot_v << std::endl;
+    std::cout << "theta = " << theta << std::endl;
+    std::cout << "sin theta = " << sin(theta) << std::endl;
+    std::cout << "cos theta = " << cos(theta) << std::endl;
+    std::cout << "Matrix J = " << std::endl;
+    std::cout << J << std::endl;
+    res.block(0, 3, 3, 1) = J * v.segment(0, 3);
+    res.topLeftCorner(3, 3) = Matrix3f(AngleAxisf(theta, rot_v));
+    res(3, 3) = 1;
+    return res;
+}
+
+inline Matrix3f exp(const Vector3f & v) {
+    return Matrix3f(AngleAxisf(v.norm(), v.normalized()));
+}
+
+inline Vector6f log(const Matrix4f & M) {
+    Vector6f res;
+    res.segment(0, 3) = M.block(0, 3, 3, 1);
+    AngleAxisf av(Matrix3f(M.block(0, 0, 3, 3)));
+    res.segment(3, 3) = av.axis()*av.angle();
+    return res;
+}
+
+inline Vector3f log(const Matrix3f & M) {
+    AngleAxisf v(M);
+    return Vector3f(v.axis()*v.angle());
 }
 
 /*

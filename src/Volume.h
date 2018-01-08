@@ -69,10 +69,51 @@ public:
             ) * 0.00003051944088f;
     }
 
-//    __device__ float3 grad(const float3 &pos) const {
-//        const float3 scaled_pos
-//    }
+    __device__ float3 grad( const float3 & pos ) const {
+        const float3 scaled_pos = make_float3((pos.x * m_size.x / m_dim.x) - 0.5f, (pos.y * m_size.y / m_dim.y) - 0.5f, (pos.z * m_size.z / m_dim.z) - 0.5f);
+        const int3 base = make_int3(floorf(scaled_pos));
+        const float3 factor = fracf(scaled_pos);
+        const int3 lower_lower = max(base - make_int3(1), make_int3(0));
+        const int3 lower_upper = max(base, make_int3(0));
+        const int3 upper_lower = min(base + make_int3(1), make_int3(m_size) - make_int3(1));
+        const int3 upper_upper = min(base + make_int3(2), make_int3(m_size) - make_int3(1));
+        const int3 & lower = lower_upper;
+        const int3 & upper = upper_lower;
 
+        float3 gradient;
+
+        gradient.x =
+              (((vs(make_uint3(upper_lower.x, lower.y, lower.z)) - vs(make_uint3(lower_lower.x, lower.y, lower.z))) * (1-factor.x)
+            + (vs(make_uint3(upper_upper.x, lower.y, lower.z)) - vs(make_uint3(lower_upper.x, lower.y, lower.z))) * factor.x) * (1-factor.y)
+            + ((vs(make_uint3(upper_lower.x, upper.y, lower.z)) - vs(make_uint3(lower_lower.x, upper.y, lower.z))) * (1-factor.x)
+            + (vs(make_uint3(upper_upper.x, upper.y, lower.z)) - vs(make_uint3(lower_upper.x, upper.y, lower.z))) * factor.x) * factor.y) * (1-factor.z)
+            + (((vs(make_uint3(upper_lower.x, lower.y, upper.z)) - vs(make_uint3(lower_lower.x, lower.y, upper.z))) * (1-factor.x)
+            + (vs(make_uint3(upper_upper.x, lower.y, upper.z)) - vs(make_uint3(lower_upper.x, lower.y, upper.z))) * factor.x) * (1-factor.y)
+            + ((vs(make_uint3(upper_lower.x, upper.y, upper.z)) - vs(make_uint3(lower_lower.x, upper.y, upper.z))) * (1-factor.x)
+            + (vs(make_uint3(upper_upper.x, upper.y, upper.z)) - vs(make_uint3(lower_upper.x, upper.y, upper.z))) * factor.x) * factor.y) * factor.z;
+
+        gradient.y =
+              (((vs(make_uint3(lower.x, upper_lower.y, lower.z)) - vs(make_uint3(lower.x, lower_lower.y, lower.z))) * (1-factor.x)
+            + (vs(make_uint3(upper.x, upper_lower.y, lower.z)) - vs(make_uint3(upper.x, lower_lower.y, lower.z))) * factor.x) * (1-factor.y)
+            + ((vs(make_uint3(lower.x, upper_upper.y, lower.z)) - vs(make_uint3(lower.x, lower_upper.y, lower.z))) * (1-factor.x)
+            + (vs(make_uint3(upper.x, upper_upper.y, lower.z)) - vs(make_uint3(upper.x, lower_upper.y, lower.z))) * factor.x) * factor.y) * (1-factor.z)
+            + (((vs(make_uint3(lower.x, upper_lower.y, upper.z)) - vs(make_uint3(lower.x, lower_lower.y, upper.z))) * (1-factor.x)
+            + (vs(make_uint3(upper.x, upper_lower.y, upper.z)) - vs(make_uint3(upper.x, lower_lower.y, upper.z))) * factor.x) * (1-factor.y)
+            + ((vs(make_uint3(lower.x, upper_upper.y, upper.z)) - vs(make_uint3(lower.x, lower_upper.y, upper.z))) * (1-factor.x)
+            + (vs(make_uint3(upper.x, upper_upper.y, upper.z)) - vs(make_uint3(upper.x, lower_upper.y, upper.z))) * factor.x) * factor.y) * factor.z;
+
+        gradient.z =
+              (((vs(make_uint3(lower.x, lower.y, upper_lower.z)) - vs(make_uint3(lower.x, lower.y, lower_lower.z))) * (1-factor.x)
+            + (vs(make_uint3(upper.x, lower.y, upper_lower.z)) - vs(make_uint3(upper.x, lower.y, lower_lower.z))) * factor.x) * (1-factor.y)
+            + ((vs(make_uint3(lower.x, upper.y, upper_lower.z)) - vs(make_uint3(lower.x, upper.y, lower_lower.z))) * (1-factor.x)
+            + (vs(make_uint3(upper.x, upper.y, upper_lower.z)) - vs(make_uint3(upper.x, upper.y, lower_lower.z))) * factor.x) * factor.y) * (1-factor.z)
+            + (((vs(make_uint3(lower.x, lower.y, upper_upper.z)) - vs(make_uint3(lower.x, lower.y, lower_upper.z))) * (1-factor.x)
+            + (vs(make_uint3(upper.x, lower.y, upper_upper.z)) - vs(make_uint3(upper.x, lower.y, lower_upper.z))) * factor.x) * (1-factor.y)
+            + ((vs(make_uint3(lower.x, upper.y, upper_upper.z)) - vs(make_uint3(lower.x, upper.y, lower_upper.z))) * (1-factor.x)
+            + (vs(make_uint3(upper.x, upper.y, upper_upper.z)) - vs(make_uint3(upper.x, upper.y, lower_upper.z))) * factor.x) * factor.y) * factor.z;
+
+        return gradient * make_float3(m_dim.x/m_size.x, m_dim.y/m_size.y, m_dim.z/m_size.z) * (0.5f * 0.00003051944088f);
+    }
     /// Set the whole volume with initial value(1.0f).
     void Reset();
 

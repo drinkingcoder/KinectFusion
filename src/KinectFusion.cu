@@ -190,8 +190,8 @@ __global__ void Vertex2NormalKernel(Image<float3> normal, const Image<float3> ve
  * f = sqr(n^T(p - p'))
  * e = n^T(p - p')
  * r = p - p'
- * J_r = ( I -p'^ )
- * J_e = n^TJ_r = n^T( I -p'^ )
+ * J_r = ( I, -p'^ )
+ * J_e = n^TJ_r = n^T( I, -p'^ )
  */
 __global__ void TrackKernel(
         Image<TrackData> out,
@@ -205,7 +205,7 @@ __global__ void TrackKernel(
         const float normal_threshold
         ) {
     const uint2 pix = thr2pos2();
-    if (pix.x >= input_vertex.m_size.x || pix.y >= input_normal.m_size.y) {
+    if (pix.x >= input_vertex.m_size.x || pix.y >= input_vertex.m_size.y) {
         return;
     }
 
@@ -389,26 +389,6 @@ __global__ void IntegrateKernel(Volume volume,
     }
 }
 
-/// this kernel just figure out the hit-map: pos3D
-/// output: pos3D gives the voxel in world space
-/*
-__global__ void RaycastKernel( Image<float3> pos3D,
-                    Image<float3> normal,
-                    const Volume volume,
-                    const Matrix4 view,
-                    const float near_plane,
-                    const float far_plane,
-                    const float step,
-                    const float large_step) {
-    const uint2 pos = thr2pos2();
-    const float4 hit = RaycastForPos(volume, pos, view, near_plane, far_plane, step, large_step);
-    if (hit.w > 0) {
-        pos3D[pos] = make_float3(hit);
-    } else {
-        pos3D[pos] = make_float3(0);
-    }
-}
-*/
 }
 
 /// this kernel gives an externel depth map for visualization
@@ -424,7 +404,7 @@ __global__ void RaycastDepthImageKernel(
                 float large_step) {
     const auto pos = thr2pos2();
 
-    float4 hit = RaycastForPos(
+    const float4 hit = RaycastForPos(
             volume,
             pos,
             view,
@@ -434,7 +414,6 @@ __global__ void RaycastDepthImageKernel(
             large_step
             );
     if (hit.w > 0) {
-//        printf("Hit!(%d, %d) = %f\n", pos.x, pos.y, hit.w);
         pos3D[pos] = make_float3(hit);
         depth[pos] = hit.w;
     } else {
@@ -443,12 +422,46 @@ __global__ void RaycastDepthImageKernel(
     }
 }
 
+__global__ void RaycastWithNormalKernel(
+                Image<float3> pos3D,
+                Image<float3> normal,
+                Volume volume,
+                Matrix4f view,
+                float near_plane,
+                float far_plane,
+                float step,
+                float large_step) {
+    const auto pos = thr2pos2();
+
+    const float4 hit = RaycastForPos(
+            volume,
+            pos,
+            view,
+            near_plane,
+            far_plane,
+            step,
+            large_step
+            );
+    if (hit.w > 0) {
+        pos3D[pos] = make_float3(hit);
+        float3 surf_normal = volume.grad(make_float3(hit));
+        if (length(surf_normal) == 0) {
+            normal[pos].x = INVALID;
+        } else {
+            normal[pos] = normalize(surf_normal);
+        }
+    } else {
+        pos3D[pos] = make_float3(0);
+        normal[pos] = make_float3(INVALID, 0, 0);
+    }
+}
+
 KinectFusion::KinectFusion(const Parameters& parameters):
                                 m_parameters(parameters) {
 
     m_volume.Init(parameters.VolumeSize, parameters.VolumeDimensions);
 //    m_volume.SetBoxWrap(make_float3(0.1f, 0.1f, 0.8f), make_float3(0.9f, 0.9f, 0.9f), -1.0f);
-    m_volume.SetBoxWrap(make_float3(0.1f, 0.8f, 0.1f), make_float3(0.9f, 0.9f, 0.9f), -1.0f);
+//    m_volume.SetBoxWrap(make_float3(0.1f, 0.8f, 0.1f), make_float3(0.9f, 0.9f, 0.9f), -1.0f);
 //    m_volume.SetBoxWrap(make_float3(0.8f, 0.1f, 0.1f), make_float3(0.9f, 0.9f, 0.9f), -1.0f);
 
     cudaSetDeviceFlags(cudaDeviceMapHost);
@@ -456,6 +469,7 @@ KinectFusion::KinectFusion(const Parameters& parameters):
     m_output.Allocate(parameters.InputSize);
     m_ba_values.Allocate(make_uint2(32, 8));
 
+    m_reduction.Allocate(parameters.InputSize);
     m_raw_depth.Allocate(parameters.InputSize);
     m_vertex.Allocate(parameters.InputSize);
     m_normal.Allocate(parameters.InputSize);
@@ -471,8 +485,8 @@ KinectFusion::KinectFusion(const Parameters& parameters):
         m_input_vertex[i].Allocate(parameters.InputSize >> i);
         m_input_normal[i].Allocate(parameters.InputSize >> i);
 
-        m_inv_cameraKs[i] << (1 << i) / m_cameraK(0, 0) , 0, (1 << i) / m_cameraK(0, 2),
-                                0, (1 << i) / m_cameraK(1, 1), (1 << i) / m_cameraK(1, 2),
+        m_inv_cameraKs[i] << (1 << i) / m_cameraK(0, 0) , 0, - m_cameraK(0, 2) / m_cameraK(0, 0),
+            0, (1 << i) / m_cameraK(1, 1), - m_cameraK(1, 2)/ m_cameraK(1, 1),
                                 0, 0, 1;
     }
 
@@ -483,6 +497,7 @@ KinectFusion::KinectFusion(const Parameters& parameters):
             parameters.GaussianFunctionSigma,
             parameters.GaussianRadius
             );
+
 }
 
 void KinectFusion::Raycast() {
@@ -504,6 +519,17 @@ void KinectFusion::Raycast() {
     RaycastDepthImageKernel<<<divup(m_parameters.InputSize, block), block>>>(
             m_vertex,
             m_output.GetDeviceImage(),
+            m_volume,
+            m,
+            m_parameters.NearPlane,
+            m_parameters.FarPlane,
+            StepSize(),
+            LargeStepSize()
+            );
+
+    RaycastWithNormalKernel<<<divup(m_parameters.InputSize, block), block>>>(
+            m_vertex,
+            m_normal,
             m_volume,
             m,
             m_parameters.NearPlane,
@@ -550,12 +576,14 @@ bool KinectFusion::Track() {
             );
 
     // downsample
+    std::cout << "Gausian ill = " << m_parameters.GaussianIlluminanceSigma << std::endl;
+    std::cout << "Gausian Radius = " << m_parameters.GaussianRadius << std::endl;
     for (auto i = 1; i < m_parameters.ICPLevels; i++) {
         HalfSampleRobustKernel<<<grids[i], m_parameters.ImageBlock>>>(
                 m_input_depth[i],
                 m_input_depth[i-1],
                 m_parameters.GaussianIlluminanceSigma * 3,
-                m_parameters.GaussianRadius
+                1
                 );
     }
     for (auto itr = 0; itr < m_parameters.ICPLevels; itr++) {
@@ -574,9 +602,13 @@ bool KinectFusion::Track() {
     const Matrix4f inv_raycast_pose = m_raycast_pose.inverse();
     const Matrix4f project_ref = combine_intrinsics(m_cameraK, inv_raycast_pose);
 
-    auto values = Eigen::Map<Eigen::Matrix<float, 8, 32, Eigen::RowMajor>>(static_cast<float*>(m_ba_values.m_data));
+    auto values = Eigen::Map<Eigen::Matrix<float, 8, 32, Eigen::RowMajor>>(m_ba_values.Data());
+    std::cout << "---------------------------------" << std::endl;
+    std::cout << "ICP Track : " << std::endl;
     for (auto level = m_parameters.ICPLevels - 1; level >= 0; level--) {
+        std::cout << "level " << level << "::::" << std::endl;
         for (auto itr = 0; itr < m_parameters.ICPIterationTimes[level]; itr++) {
+            std::cout << "itr " << itr << ": ";
             TrackKernel<<<grids[level], m_parameters.ImageBlock>>>(
                     m_reduction,
                     m_input_vertex[level],
@@ -597,12 +629,15 @@ bool KinectFusion::Track() {
             cudaDeviceSynchronize(); //synchronize host pin memory
             // solve linear equation
             Vector32f v = values.colwise().sum();
+
+            std::cout << "inlier pts =  " << v(28) << std::endl;
             Vector6f delta_se3x = solve(Vector27f(v.segment(1, 27)));
 
             // SE3 transform
-            Matrix3f R = AngleAxisf(delta_se3x.segment(3, 3).norm(), delta_se3x.segment(3, 3));
-            m_pose = Sophus::SE3<float>::exp(R, Vector3f(delta_se3x.segment(0, 3))).matrix() * m_pose;
-
+            std::cout << "exp pose = " << std::endl << exp(delta_se3x) << std::endl;
+            m_pose = exp(delta_se3x) * m_pose;
+            std::cout << "err = : " << v(0) << std::endl;
+            std::cout << "delta_se3-: " << delta_se3x << std::endl;
             if (delta_se3x.norm() < 1e-5) {
                 std::cout << "Ahead of optimization" << std::endl;
                 break;
@@ -610,7 +645,8 @@ bool KinectFusion::Track() {
         }
     }
 
-    if ((sqrt(values(0, 0) / values(0, 28)) > 2e-2) || (values(0, 28)) / (m_raw_depth.m_size.x * m_raw_depth.m_size.y) < 0.15f) {
+    Vector32f v = values.colwise().sum();
+    if ((sqrt(v(0) / v(28)) > 2e-2) || (v(28)) / (m_raw_depth.m_size.x * m_raw_depth.m_size.y) < 0.15f) {
         std::cout << "Don't update pose" << std::endl;
         m_pose = old_pose;
         return false;
@@ -618,25 +654,3 @@ bool KinectFusion::Track() {
     return true;
 }
 
-void KinectFusion::RenderInput(Image<float3> pos3D,
-//        Image<float3> normal,
-        Image<float> depth,
-        const Volume volume,
-        const Matrix4f view,
-        const float near_plane,
-        const float far_plane,
-        const float step,
-        const float large_step) {
-    dim3 block(16, 16);
-    RaycastDepthImageKernel<<<divup(pos3D.m_size, block), block>>>(
-            pos3D,
-//            normal,
-            m_output,
-            volume,
-            view,
-            near_plane,
-            far_plane,
-            step,
-            large_step
-            );
-}

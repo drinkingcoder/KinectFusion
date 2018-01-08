@@ -42,7 +42,9 @@ public:
     void UpdateWindowWithRGBAndDepth(void *rgb, void * depth);
     void UpdateWindowWithRGBAndDepthOnDevice(
             Image<uchar4, HostDeviceAllocator> & rgb,
-            Image<float, HostDeviceAllocator> & depth
+            Image<float, HostDeviceAllocator> & depth,
+            Image<float3, DeviceAllocator> & show,
+            Image<float3, DeviceAllocator> & show2
             );
     bool Terminated();
 
@@ -64,5 +66,7 @@ private:
     static Image<float, HostDeviceAllocator> m_depth;
     static Image<uchar4, HostDeviceAllocator> m_rgb;
 
+    static Image<float3, HostDeviceAllocator> m_show;
+    static Image<float3, HostDeviceAllocator> m_show2;
 };
 

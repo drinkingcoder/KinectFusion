@@ -184,7 +184,8 @@ struct Image: public Allocator {
 
     template<typename A>
         Image<T, Allocator> & operator=(const Image<T, A> & other) {
-            image_copy(*this, other, m_size.x * m_size.y * sizeof(T));
+            image_copy(*this, other, other.m_size.x * other.m_size.y * sizeof(T));
+            m_size = other.m_size; //!TODO() should be changed here
             return *this;
         }
 

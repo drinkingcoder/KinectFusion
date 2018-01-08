@@ -1,0 +1,708 @@
+Only in /usr/include/eigen3/Eigen: Array
+diff Eigen/Cholesky /usr/include/eigen3/Eigen/Cholesky
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+20,21c13,14
+<   * Those decompositions are also accessible via the following methods:
+<   *  - MatrixBase::llt()
+---
+>   * Those decompositions are accessible via the following MatrixBase methods:
+>   *  - MatrixBase::llt(),
+23,24d15
+<   *  - SelfAdjointView::llt()
+<   *  - SelfAdjointView::ldlt()
+30a22
+> #include "src/misc/Solve.h"
+diff Eigen/CholmodSupport /usr/include/eigen3/Eigen/CholmodSupport
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+42a36,38
+> #include "src/misc/Solve.h"
+> #include "src/misc/SparseSolve.h"
+> 
+43a40
+> 
+diff Eigen/Core /usr/include/eigen3/Eigen/Core
+17,58d16
+< // Handle NVCC/CUDA
+< #ifdef __CUDACC__
+<   // Do not try asserts on CUDA!
+<   #ifndef EIGEN_NO_DEBUG
+<   #define EIGEN_NO_DEBUG
+<   #endif
+< 
+<   #ifdef EIGEN_INTERNAL_DEBUGGING
+<   #undef EIGEN_INTERNAL_DEBUGGING
+<   #endif
+< 
+<   // Do not try to vectorize on CUDA!
+<   #ifndef EIGEN_DONT_VECTORIZE
+<   #define EIGEN_DONT_VECTORIZE
+<   #endif
+< 
+<   #ifdef EIGEN_EXCEPTIONS
+<   #undef EIGEN_EXCEPTIONS
+<   #endif
+<   
+<   // All functions callable from CUDA code must be qualified with __device__
+<   #define EIGEN_DEVICE_FUNC __host__ __device__
+<   
+< #else
+<   #define EIGEN_DEVICE_FUNC
+<   
+< #endif
+< 
+< #if defined(__CUDA_ARCH__)
+<   #define EIGEN_USING_STD_MATH(FUNC) using ::FUNC;
+< #else
+<   #define EIGEN_USING_STD_MATH(FUNC) using std::FUNC;
+< #endif
+< 
+< #if (defined(_CPPUNWIND) || defined(__EXCEPTIONS)) && !defined(__CUDA_ARCH__) && !defined(EIGEN_EXCEPTIONS)
+<   #define EIGEN_EXCEPTIONS
+< #endif
+< 
+< #ifdef EIGEN_EXCEPTIONS
+<   #include <new>
+< #endif
+< 
+66c24
+< #if EIGEN_COMP_MINGW && EIGEN_GNUC_AT_LEAST(4,6)
+---
+> #if defined(__MINGW32__) && EIGEN_GNUC_AT_LEAST(4,6)
+76,78c34,36
+< // if alignment is disabled, then disable vectorization. Note: EIGEN_MAX_ALIGN_BYTES is the proper check, it takes into
+< // account both the user's will (EIGEN_MAX_ALIGN_BYTES,EIGEN_DONT_ALIGN) and our own platform checks
+< #if EIGEN_MAX_ALIGN_BYTES==0
+---
+> // if alignment is disabled, then disable vectorization. Note: EIGEN_ALIGN is the proper check, it takes into
+> // account both the user's will (EIGEN_DONT_ALIGN) and our own platform checks
+> #if !EIGEN_ALIGN
+84c42
+< #if EIGEN_COMP_MSVC
+---
+> #ifdef _MSC_VER
+86c44
+<   #if (EIGEN_COMP_MSVC >= 1500) // 2008 or later
+---
+>   #if (_MSC_VER >= 1500) // 2008 or later
+89c47
+<     #if (defined(_M_IX86_FP) && (_M_IX86_FP >= 2)) || EIGEN_ARCH_x86_64
+---
+>     #if (defined(_M_IX86_FP) && (_M_IX86_FP >= 2)) || defined(_M_X64)
+95c53
+<   #if (defined __SSE2__) && ( (!EIGEN_COMP_GNUC) || EIGEN_COMP_ICC || EIGEN_GNUC_AT_LEAST(4,2) )
+---
+>   #if (defined __SSE2__) && ( (!defined __GNUC__) || (defined __INTEL_COMPILER) || EIGEN_GNUC_AT_LEAST(4,2) )
+127,139d84
+<     #ifdef __AVX__
+<       #define EIGEN_VECTORIZE_AVX
+<       #define EIGEN_VECTORIZE_SSE3
+<       #define EIGEN_VECTORIZE_SSSE3
+<       #define EIGEN_VECTORIZE_SSE4_1
+<       #define EIGEN_VECTORIZE_SSE4_2
+<     #endif
+<     #ifdef __AVX2__
+<       #define EIGEN_VECTORIZE_AVX2
+<     #endif
+<     #ifdef __FMA__
+<       #define EIGEN_VECTORIZE_FMA
+<     #endif
+153c98
+<       #if EIGEN_COMP_ICC >= 1110
+---
+>       #ifdef __INTEL_COMPILER
+170,172d114
+<         #ifdef EIGEN_VECTORIZE_AVX
+<         #include <immintrin.h>
+<         #endif
+175,183d116
+<   #elif defined __VSX__
+<     #define EIGEN_VECTORIZE
+<     #define EIGEN_VECTORIZE_VSX
+<     #include <altivec.h>
+<     // We need to #undef all these ugly tokens defined in <altivec.h>
+<     // => use __vector instead of vector
+<     #undef bool
+<     #undef vector
+<     #undef pixel
+193c126
+<   #elif (defined  __ARM_NEON) || (defined __ARM_NEON__)
+---
+>   #elif defined  __ARM_NEON__
+200,204d132
+< #if defined __CUDACC__
+<   #define EIGEN_VECTORIZE_CUDA
+<   #include <vector_types.h>
+< #endif
+< 
+214c142
+< #if !(EIGEN_COMP_MSVC && EIGEN_OS_WINCE) && !EIGEN_COMP_ARM
+---
+> #if !(defined(_MSC_VER) && defined(_WIN32_WCE)) && !defined(__ARMCC_VERSION)
+240c168
+< #if EIGEN_COMP_MSVC && EIGEN_ARCH_i386_OR_x86_64 && !EIGEN_OS_WINCE
+---
+> #if defined(_MSC_VER) && (defined(_M_IX86)||defined(_M_X64))
+243a172,179
+> #if defined(_CPPUNWIND) || defined(__EXCEPTIONS)
+>   #define EIGEN_EXCEPTIONS
+> #endif
+> 
+> #ifdef EIGEN_EXCEPTIONS
+>   #include <new>
+> #endif
+> 
+248,250c184
+< #if defined(EIGEN_VECTORIZE_AVX)
+<   return "AVX SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2";
+< #elif defined(EIGEN_VECTORIZE_SSE4_2)
+---
+> #if defined(EIGEN_VECTORIZE_SSE4_2)
+262,263d195
+< #elif defined(EIGEN_VECTORIZE_VSX)
+<   return "VSX";
+273,275c205,232
+< #if defined EIGEN2_SUPPORT_STAGE40_FULL_EIGEN3_STRICTNESS || defined EIGEN2_SUPPORT_STAGE30_FULL_EIGEN3_API || defined EIGEN2_SUPPORT_STAGE20_RESOLVE_API_CONFLICTS || defined EIGEN2_SUPPORT_STAGE10_FULL_EIGEN2_API || defined EIGEN2_SUPPORT
+< // This will generate an error message:
+< #error Eigen2-support is only available up to version 3.2. Please go to "http://eigen.tuxfamily.org/index.php?title=Eigen2" for further information
+---
+> #define STAGE10_FULL_EIGEN2_API             10
+> #define STAGE20_RESOLVE_API_CONFLICTS       20
+> #define STAGE30_FULL_EIGEN3_API             30
+> #define STAGE40_FULL_EIGEN3_STRICTNESS      40
+> #define STAGE99_NO_EIGEN2_SUPPORT           99
+> 
+> #if   defined EIGEN2_SUPPORT_STAGE40_FULL_EIGEN3_STRICTNESS
+>   #define EIGEN2_SUPPORT
+>   #define EIGEN2_SUPPORT_STAGE STAGE40_FULL_EIGEN3_STRICTNESS
+> #elif defined EIGEN2_SUPPORT_STAGE30_FULL_EIGEN3_API
+>   #define EIGEN2_SUPPORT
+>   #define EIGEN2_SUPPORT_STAGE STAGE30_FULL_EIGEN3_API
+> #elif defined EIGEN2_SUPPORT_STAGE20_RESOLVE_API_CONFLICTS
+>   #define EIGEN2_SUPPORT
+>   #define EIGEN2_SUPPORT_STAGE STAGE20_RESOLVE_API_CONFLICTS
+> #elif defined EIGEN2_SUPPORT_STAGE10_FULL_EIGEN2_API
+>   #define EIGEN2_SUPPORT
+>   #define EIGEN2_SUPPORT_STAGE STAGE10_FULL_EIGEN2_API
+> #elif defined EIGEN2_SUPPORT
+>   // default to stage 3, that's what it's always meant
+>   #define EIGEN2_SUPPORT_STAGE30_FULL_EIGEN3_API
+>   #define EIGEN2_SUPPORT_STAGE STAGE30_FULL_EIGEN3_API
+> #else
+>   #define EIGEN2_SUPPORT_STAGE STAGE99_NO_EIGEN2_SUPPORT
+> #endif
+> 
+> #ifdef EIGEN2_SUPPORT
+> #undef minor
+295d251
+< #include "src/Core/util/Meta.h"
+296a253
+> #include "src/Core/util/Meta.h"
+303d259
+< #include "src/Core/SpecialFunctions.h"
+306,315c262
+< #if defined EIGEN_VECTORIZE_AVX
+<   // Use AVX for floats and doubles, SSE for integers
+<   #include "src/Core/arch/SSE/PacketMath.h"
+<   #include "src/Core/arch/SSE/Complex.h"
+<   #include "src/Core/arch/SSE/MathFunctions.h"
+<   #include "src/Core/arch/AVX/PacketMath.h"
+<   #include "src/Core/arch/AVX/MathFunctions.h"
+<   #include "src/Core/arch/AVX/Complex.h"
+<   #include "src/Core/arch/AVX/TypeCasting.h"
+< #elif defined EIGEN_VECTORIZE_SSE
+---
+> #if defined EIGEN_VECTORIZE_SSE
+319,320c266
+<   #include "src/Core/arch/SSE/TypeCasting.h"
+< #elif defined(EIGEN_VECTORIZE_ALTIVEC) || defined(EIGEN_VECTORIZE_VSX)
+---
+> #elif defined EIGEN_VECTORIZE_ALTIVEC
+322d267
+<   #include "src/Core/arch/AltiVec/MathFunctions.h"
+326d270
+<   #include "src/Core/arch/NEON/MathFunctions.h"
+330,334d273
+< #if defined EIGEN_VECTORIZE_CUDA
+<   #include "src/Core/arch/CUDA/PacketMath.h"
+<   #include "src/Core/arch/CUDA/MathFunctions.h"
+< #endif
+< 
+337,342c276
+< #include "src/Core/functors/BinaryFunctors.h"
+< #include "src/Core/functors/UnaryFunctors.h"
+< #include "src/Core/functors/NullaryFunctors.h"
+< #include "src/Core/functors/StlFunctors.h"
+< #include "src/Core/functors/AssignmentFunctors.h"
+< 
+---
+> #include "src/Core/Functors.h"
+348,351d281
+< #include "src/Core/Product.h"
+< #include "src/Core/CoreEvaluators.h"
+< #include "src/Core/AssignEvaluator.h"
+< 
+357d286
+< #include "src/Core/ArrayBase.h"
+361,363c290
+< 
+< // #include "src/Core/ForceAlignedAccess.h"
+< 
+---
+> #include "src/Core/ForceAlignedAccess.h"
+376d302
+< #include "src/Core/Stride.h"
+377a304
+> #include "src/Core/Stride.h"
+379d305
+< #include "src/Core/Ref.h"
+381a308
+> #include "src/Core/Ref.h"
+385a313,314
+> #include "src/Core/PermutationMatrix.h"
+> #include "src/Core/Transpositions.h"
+391a321,322
+> #include "src/Core/Flagged.h"
+> #include "src/Core/ProductBase.h"
+393,397d323
+< #include "src/Core/Solve.h"
+< #include "src/Core/Inverse.h"
+< #include "src/Core/SolverBase.h"
+< #include "src/Core/PermutationMatrix.h"
+< #include "src/Core/Transpositions.h"
+402c328
+< #include "src/Core/ProductEvaluators.h"
+---
+> #include "src/Core/products/CoeffBasedProduct.h"
+423a350
+> #include "src/Core/ArrayBase.h"
+443a371,374
+> 
+> #ifdef EIGEN2_SUPPORT
+> #include "Eigen2Support"
+> #endif
+diff Eigen/Eigen /usr/include/eigen3/Eigen/Eigen
+2c2
+< #include "Sparse"
+---
+> //#include "Sparse"
+Only in /usr/include/eigen3/Eigen: Eigen2Support
+diff Eigen/Eigenvalues /usr/include/eigen3/Eigen/Eigenvalues
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+diff Eigen/Geometry /usr/include/eigen3/Eigen/Geometry
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+18a12,15
+> #ifndef M_PI
+> #define M_PI 3.14159265358979323846
+> #endif
+> 
+39,55c36,56
+< #include "src/Geometry/Homogeneous.h"
+< #include "src/Geometry/RotationBase.h"
+< #include "src/Geometry/Rotation2D.h"
+< #include "src/Geometry/Quaternion.h"
+< #include "src/Geometry/AngleAxis.h"
+< #include "src/Geometry/Transform.h"
+< #include "src/Geometry/Translation.h"
+< #include "src/Geometry/Scaling.h"
+< #include "src/Geometry/Hyperplane.h"
+< #include "src/Geometry/ParametrizedLine.h"
+< #include "src/Geometry/AlignedBox.h"
+< #include "src/Geometry/Umeyama.h"
+< 
+< // Use the SSE optimized version whenever possible. At the moment the
+< // SSE version doesn't compile when AVX is enabled
+< #if defined EIGEN_VECTORIZE_SSE && !defined EIGEN_VECTORIZE_AVX
+< #include "src/Geometry/arch/Geometry_SSE.h"
+---
+> #if EIGEN2_SUPPORT_STAGE > STAGE20_RESOLVE_API_CONFLICTS
+>   #include "src/Geometry/Homogeneous.h"
+>   #include "src/Geometry/RotationBase.h"
+>   #include "src/Geometry/Rotation2D.h"
+>   #include "src/Geometry/Quaternion.h"
+>   #include "src/Geometry/AngleAxis.h"
+>   #include "src/Geometry/Transform.h"
+>   #include "src/Geometry/Translation.h"
+>   #include "src/Geometry/Scaling.h"
+>   #include "src/Geometry/Hyperplane.h"
+>   #include "src/Geometry/ParametrizedLine.h"
+>   #include "src/Geometry/AlignedBox.h"
+>   #include "src/Geometry/Umeyama.h"
+> 
+>   #if defined EIGEN_VECTORIZE_SSE
+>     #include "src/Geometry/arch/Geometry_SSE.h"
+>   #endif
+> #endif
+> 
+> #ifdef EIGEN2_SUPPORT
+> #include "src/Eigen2Support/Geometry/All.h"
+diff Eigen/Householder /usr/include/eigen3/Eigen/Householder
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+diff Eigen/IterativeLinearSolvers /usr/include/eigen3/Eigen/IterativeLinearSolvers
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+22d14
+<   *  - LeastSquaresConjugateGradient for rectangular least-square problems,
+27,28c19,20
+<   *  - DiagonalPreconditioner - also called Jacobi preconditioner, work very well on diagonal dominant matrices.
+<   *  - IncompleteLUT - incomplete LU factorization with dual thresholding
+---
+>   *  - DiagonalPreconditioner - also called JAcobi preconditioner, work very well on diagonal dominant matrices.
+>   *  - IncompleteILUT - incomplete LU factorization with dual thresholding
+32,34c24,26
+<     \code
+<     #include <Eigen/IterativeLinearSolvers>
+<     \endcode
+---
+>   * \code
+>   * #include <Eigen/IterativeLinearSolvers>
+>   * \endcode
+37c29,31
+< #include "src/IterativeLinearSolvers/SolveWithGuess.h"
+---
+> #include "src/misc/Solve.h"
+> #include "src/misc/SparseSolve.h"
+> 
+41d34
+< #include "src/IterativeLinearSolvers/LeastSquareConjugateGradient.h"
+44d36
+< #include "src/IterativeLinearSolvers/IncompleteCholesky.h"
+diff Eigen/Jacobi /usr/include/eigen3/Eigen/Jacobi
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+Only in /usr/include/eigen3/Eigen: LeastSquares
+diff Eigen/LU /usr/include/eigen3/Eigen/LU
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+25a19
+> #include "src/misc/Solve.h"
+34c28
+< #include "src/LU/InverseImpl.h"
+---
+> #include "src/LU/Inverse.h"
+36,38c30
+< // Use the SSE optimized version whenever possible. At the moment the
+< // SSE version doesn't compile when AVX is enabled
+< #if defined EIGEN_VECTORIZE_SSE && !defined EIGEN_VECTORIZE_AVX
+---
+> #if defined EIGEN_VECTORIZE_SSE
+39a32,35
+> #endif
+> 
+> #ifdef EIGEN2_SUPPORT
+>   #include "src/Eigen2Support/LU.h"
+diff Eigen/MetisSupport /usr/include/eigen3/Eigen/MetisSupport
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+diff Eigen/OrderingMethods /usr/include/eigen3/Eigen/OrderingMethods
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+diff Eigen/PardisoSupport /usr/include/eigen3/Eigen/PardisoSupport
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+15a9,10
+> 
+> #include <unsupported/Eigen/SparseExtra>
+diff Eigen/PaStiXSupport /usr/include/eigen3/Eigen/PaStiXSupport
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+44a38,40
+> #include "src/misc/Solve.h"
+> #include "src/misc/SparseSolve.h"
+> 
+45a42
+> 
+diff Eigen/QR /usr/include/eigen3/Eigen/QR
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+25,27c18
+<   *  - MatrixBase::householderQr()
+<   *  - MatrixBase::colPivHouseholderQr()
+<   *  - MatrixBase::fullPivHouseholderQr()
+---
+>   *  - MatrixBase::qr(),
+33a25
+> #include "src/misc/Solve.h"
+41a34,37
+> #ifdef EIGEN2_SUPPORT
+> #include "src/Eigen2Support/QR.h"
+> #endif
+> 
+42a39,42
+> 
+> #ifdef EIGEN2_SUPPORT
+> #include "Eigenvalues"
+> #endif
+diff Eigen/QtAlignedMalloc /usr/include/eigen3/Eigen/QtAlignedMalloc
+1,6d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+diff Eigen/Sparse /usr/include/eigen3/Eigen/Sparse
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+21,23c14,16
+<     \code
+<     #include <Eigen/Sparse>
+<     \endcode
+---
+>   * \code
+>   * #include <Eigen/Sparse>
+>   * \endcode
+diff Eigen/SparseCholesky /usr/include/eigen3/Eigen/SparseCholesky
+36a37,38
+> #include "src/misc/Solve.h"
+> #include "src/misc/SparseSolve.h"
+diff Eigen/SparseCore /usr/include/eigen3/Eigen/SparseCore
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+24c17
+<   * This module provides a sparse matrix representation, and basic associated matrix manipulations
+---
+>   * This module provides a sparse matrix representation, and basic associatd matrix manipulations
+35a29,35
+> namespace Eigen {
+> 
+> /** The type used to identify a general sparse storage. */
+> struct Sparse {};
+> 
+> }
+> 
+38d37
+< #include "src/SparseCore/SparseAssign.h"
+41d39
+< #include "src/SparseCore/SparseCompressedBase.h"
+43d40
+< #include "src/SparseCore/SparseMap.h"
+46c43,44
+< #include "src/SparseCore/SparseRef.h"
+---
+> #include "src/SparseCore/SparseBlock.h"
+> #include "src/SparseCore/SparseTranspose.h"
+49,50d46
+< #include "src/SparseCore/SparseTranspose.h"
+< #include "src/SparseCore/SparseBlock.h"
+51a48
+> #include "src/SparseCore/SparsePermutation.h"
+53,54c50
+< #include "src/SparseCore/SparseView.h"
+< #include "src/SparseCore/SparseDiagonalProduct.h"
+---
+> #include "src/SparseCore/SparseFuzzy.h"
+59c55
+< #include "src/SparseCore/SparseSelfAdjointView.h"
+---
+> #include "src/SparseCore/SparseDiagonalProduct.h"
+60a57
+> #include "src/SparseCore/SparseSelfAdjointView.h"
+62,64c59
+< #include "src/SparseCore/SparsePermutation.h"
+< #include "src/SparseCore/SparseFuzzy.h"
+< #include "src/SparseCore/SparseSolverBase.h"
+---
+> #include "src/SparseCore/SparseView.h"
+diff Eigen/SparseLU /usr/include/eigen3/Eigen/SparseLU
+22a23,25
+> #include "src/misc/Solve.h"
+> #include "src/misc/SparseSolve.h"
+> 
+diff Eigen/SparseQR /usr/include/eigen3/Eigen/SparseQR
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+29a23,25
+> 
+> #include "src/misc/Solve.h"
+> #include "src/misc/SparseSolve.h"
+diff Eigen/SPQRSupport /usr/include/eigen3/Eigen/SPQRSupport
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+30a24,25
+> #include "src/misc/Solve.h"
+> #include "src/misc/SparseSolve.h"
+Common subdirectories: Eigen/src and /usr/include/eigen3/Eigen/src
+diff Eigen/StdDeque /usr/include/eigen3/Eigen/StdDeque
+17c17
+< #if EIGEN_COMP_MSVC && EIGEN_OS_WIN64 /* MSVC auto aligns in 64 bit builds */
+---
+> #if (defined(_MSC_VER) && defined(_WIN64)) /* MSVC auto aligns in 64 bit builds */
+diff Eigen/StdList /usr/include/eigen3/Eigen/StdList
+16c16
+< #if EIGEN_COMP_MSVC && EIGEN_OS_WIN64 /* MSVC auto aligns in 64 bit builds */    
+---
+> #if (defined(_MSC_VER) && defined(_WIN64)) /* MSVC auto aligns in 64 bit builds */    
+diff Eigen/StdVector /usr/include/eigen3/Eigen/StdVector
+17c17
+< #if EIGEN_COMP_MSVC && EIGEN_OS_WIN64 /* MSVC auto aligns in 64 bit builds */
+---
+> #if (defined(_MSC_VER) && defined(_WIN64)) /* MSVC auto aligns in 64 bit builds */
+diff Eigen/SuperLUSupport /usr/include/eigen3/Eigen/SuperLUSupport
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+46,47d38
+<   * \warning This wrapper is only for the 4.x versions of SuperLU. The 3.x and 5.x versions are not supported.
+<   *
+59a51,53
+> #include "src/misc/Solve.h"
+> #include "src/misc/SparseSolve.h"
+> 
+60a55
+> 
+diff Eigen/SVD /usr/include/eigen3/Eigen/SVD
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+22,25c15
+<   * Two decomposition algorithms are provided:
+<   *  - JacobiSVD implementing two-sided Jacobi iterations is numerically very accurate, fast for small matrices, but very slow for larger ones.
+<   *  - BDCSVD implementing a recursive divide & conquer strategy on top of an upper-bidiagonalization which remains fast for large problems.
+<   * These decompositions are accessible via the respective classes and following MatrixBase methods:
+---
+>   * This decomposition is accessible via the following MatrixBase method:
+27d16
+<   *  - MatrixBase::bdcSvd()
+34,35c23
+< #include "src/SVD/UpperBidiagonalization.h"
+< #include "src/SVD/SVDBase.h"
+---
+> #include "src/misc/Solve.h"
+37d24
+< #include "src/SVD/BDCSVD.h"
+39a27,31
+> #endif
+> #include "src/SVD/UpperBidiagonalization.h"
+> 
+> #ifdef EIGEN2_SUPPORT
+> #include "src/Eigen2Support/SVD.h"
+diff Eigen/UmfPackSupport /usr/include/eigen3/Eigen/UmfPackSupport
+1,7d0
+< // This file is part of Eigen, a lightweight C++ template library
+< // for linear algebra.
+< //
+< // This Source Code Form is subject to the terms of the Mozilla
+< // Public License v. 2.0. If a copy of the MPL was not distributed
+< // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+< 
+34a28,30
+> 
+> #include "src/misc/Solve.h"
+> #include "src/misc/SparseSolve.h"

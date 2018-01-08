@@ -1,2 +1,0 @@
-/usr/bin/ar qc libKinectFusion.a  CMakeFiles/KinectFusion.dir/Visualizer.cc.o CMakeFiles/KinectFusion.dir/KinectFusion_generated_KinectFusion.cu.o CMakeFiles/KinectFusion.dir/KinectFusion_generated_Volume.cu.o CMakeFiles/KinectFusion.dir/KinectFusion_generated_helpers.cu.o CMakeFiles/KinectFusion.dir/Utility/KinectFusion_generated_LocalConfigurator.cu.o
-/usr/bin/ranlib libKinectFusion.a

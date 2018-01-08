@@ -98,15 +98,16 @@ public:
         parameters.FramePath = m_json_parser->GetString("FramePath");
 
         m_frame_count = parameters.FrameIndexHead;
-        m_parameters = parameters;
         tmp_depth.Allocate(parameters.InputSize);
 
-        m_parameters.ImageBlock = dim3(32, 16);
+        parameters.ImageBlock = dim3(32, 16);
 
-        m_parameters.ICPIterationTimes.resize(3);
-        m_parameters.ICPIterationTimes[0] = 10;
-        m_parameters.ICPIterationTimes[1] = 5;
-        m_parameters.ICPIterationTimes[2] = 5;
+        parameters.ICPIterationTimes.resize(3);
+        parameters.ICPIterationTimes[0] = 20;
+        parameters.ICPIterationTimes[1] = 10;
+        parameters.ICPIterationTimes[2] = 10;
+
+        m_parameters = parameters;
 	}
 
     // rgb - uchar4

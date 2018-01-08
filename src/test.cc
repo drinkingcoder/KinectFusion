@@ -48,18 +48,27 @@ void Run() {
 
     Matrix4f delta_rotation = Matrix4f::Identity();
     delta_rotation.topLeftCorner(3, 3) = Matrix3f(AngleAxisf(M_PI / 20, Vector3f::UnitX()));
+    pose = trans * rot * pre_trans;
+
+    kinectfusion->SetPose(pose);
+    configurator->NextRGBAndDepthFrame(raw_rgb, raw_depth);
+    kinectfusion->SetDepth(raw_depth);
+    kinectfusion->Integrate();
 
     while(configurator->NextRGBAndDepthFrame(raw_rgb, raw_depth)) {
         kinectfusion->SetDepth(raw_depth);
-        pose = trans * rot * pre_trans;
+        kinectfusion->Raycast();
+        kinectfusion->Track();
         kinectfusion->Integrate();
 //        rot *= delta_rotation;
-        kinectfusion->Raycast();
         if (visualizer->Terminated()) {
             break;
         }
         cudaDeviceSynchronize();
-        visualizer->UpdateWindowWithRGBAndDepthOnDevice(raw_rgb, kinectfusion->m_output);
+        visualizer->UpdateWindowWithRGBAndDepthOnDevice(raw_rgb,
+                kinectfusion->m_output,
+                kinectfusion->m_vertex,
+                kinectfusion->m_input_vertex[0]);
     }
 }
 
