@@ -380,6 +380,7 @@ __global__ void IntegrateKernel(Volume volume,
 
         //update the voxel when depth difference less than threshold
         if (diff > -mu) {
+//            printf("diff = %f ", diff);
             const float sdf = fminf(1.0f, diff/mu);
             float2 data = volume[pix]; //x = tsdf, y = weight
             data.x = clamp((data.y * data.x + sdf) / (data.y + 1), -1.0f, 1.0f);

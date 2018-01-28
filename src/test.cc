@@ -3,7 +3,7 @@
 #include "Visualizer.h"
 #include "KinectFusion.h"
 
-#define CONFIG_FILE "config.json"
+#define CONFIG_FILE "../config.json"
 
 using namespace std;
 

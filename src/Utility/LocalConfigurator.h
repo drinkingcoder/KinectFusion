@@ -3,6 +3,7 @@
 #include "Configurator/Configurator.h"
 #include <cuda_runtime.h>
 #include <iostream>
+#include <fstream>
 #include <utility>
 #include "Types.h"
 #include "cutil_math.h"
@@ -25,14 +26,16 @@ struct Parameters {
     uint2 InputSize;
 	std::string RGBFramePrefix, RGBFrameSuffix, DepthFramePrefix, DepthFrameSuffix;
 	int FrameIndexHead, FrameIndexTail;
-    char FrameIndexFilledWithCharacter;
-    int FrameIndexWidth;
+//    char FrameIndexFilledWithCharacter;
+//    int FrameIndexWidth;
 
     int GaussianRadius = 2;
     float GaussianFunctionSigma = 4.0f;
     float GaussianIlluminanceSigma = 0.1f;
 
-    std::string CalibrationFile, FramePath;
+//    std::string CalibrationFile,
+    std::string FramePath;
+    std::string RGBConfigFile, DepthConfigFile;
     dim3 ImageBlock;
 
     std::vector<int> ICPIterationTimes;
@@ -61,10 +64,10 @@ public:
         auto vf = m_json_parser->GetFloatVec("CameraK");
         */
         parameters.CameraK = Matrix3f::Identity();
-        parameters.CameraK(0, 2) = 346.471;
-        parameters.CameraK(1, 2) = 249.031;
-        parameters.CameraK(0, 0) = 573.71;
-        parameters.CameraK(1, 1) = 574.394;
+        parameters.CameraK(0, 2) = 320.1;
+        parameters.CameraK(1, 2) = 247.6;
+        parameters.CameraK(0, 0) = 535.4;
+        parameters.CameraK(1, 1) = 539.2;
         /*
         parameters.CameraK(0, 2) = 160;
         parameters.CameraK(1, 2) = 120;
@@ -90,12 +93,16 @@ public:
         parameters.FrameIndexHead = m_json_parser->GetInt("FrameIndexHead");
         parameters.FrameIndexTail = m_json_parser->GetInt("FrameIndexTail");
 
+        /*
         auto tmpstring = m_json_parser->GetString("FrameIndexFilledWithCharacter");
         parameters.FrameIndexFilledWithCharacter = tmpstring[0];
         parameters.FrameIndexWidth = m_json_parser->GetInt("FrameIndexWidth");
+        */
 
-        parameters.CalibrationFile = m_json_parser->GetString("CalibrationFile");
+//        parameters.CalibrationFile = m_json_parser->GetString("CalibrationFile");
         parameters.FramePath = m_json_parser->GetString("FramePath");
+        parameters.RGBConfigFile = m_json_parser->GetString("RGBConfigFile");
+        parameters.DepthConfigFile = m_json_parser->GetString("DepthConfigFile");
 
         m_frame_count = parameters.FrameIndexHead;
         tmp_depth.Allocate(parameters.InputSize);
@@ -106,6 +113,31 @@ public:
         parameters.ICPIterationTimes[0] = 20;
         parameters.ICPIterationTimes[1] = 10;
         parameters.ICPIterationTimes[2] = 10;
+
+        std::string fn = parameters.FramePath+parameters.RGBConfigFile;
+        m_rgbf.open(fn);
+        if( !m_rgbf ) {
+            std::cout << "Can not open RGB Config File." <<std::endl;
+            exit(-1);
+        }
+        std::cout << "RGB Config content" << std::endl;
+        for (auto i = 0; i < 3; i++) {
+            std::string s;
+            std::getline(m_rgbf, s);
+            std::cout << s;
+        }
+        fn = parameters.FramePath+parameters.DepthConfigFile;
+        m_depthf.open(fn);
+        if( !m_depthf ) {
+            std::cout << "Can not open Depth Config File." <<std::endl;
+            exit(-1);
+        }
+        std::cout << "Depth Config content" << std::endl;
+        for (auto i = 0; i < 3; i++) {
+            std::string s;
+            std::getline(m_depthf, s);
+            std::cout << s;
+        }
 
         m_parameters = parameters;
 	}
@@ -118,22 +150,16 @@ public:
             return false;
         }
 
-        m_frame_ss.width(m_parameters.FrameIndexWidth);
-        m_frame_ss.fill(m_parameters.FrameIndexFilledWithCharacter);
-        m_frame_ss.str("");
-        m_frame_ss << m_frame_count;
-        m_frame_count++;
-
-        auto fn = m_parameters.FramePath +
-                    m_parameters.DepthFramePrefix +
-                    m_frame_ss.str() +
-                    m_parameters.DepthFrameSuffix;
+        float timestamp;
+        std::string fn;
+        m_depthf >> timestamp >> fn;
+        fn = m_parameters.FramePath + fn;
 
         cv::Mat read_image = cv::imread(fn, -1);
         if (! read_image.data ) {
             std::cout << "Failed: File <" << fn << ">" << std::endl;
             std::cout << "    Not Found! " << std::endl;
-            return false;
+            exit(0);
         }
         CUDASafeCall(
                 cudaMemcpy(
@@ -145,16 +171,14 @@ public:
                 );
         CUDATransfer(depth, tmp_depth);
 
-        fn = m_parameters.FramePath +
-                    m_parameters.RGBFramePrefix +
-                    m_frame_ss.str() +
-                    m_parameters.RGBFrameSuffix;
+        m_rgbf >> timestamp >> fn;
+        fn = m_parameters.FramePath + fn;
 
         read_image = cv::imread(fn, -1);
         if (! read_image.data ) {
             std::cout << "Failed: File <" << fn << ">" << std::endl;
             std::cout << "    Not Found! " << std::endl;
-            return false;
+            exit(0);
         }
         cv::Mat rgb_image(read_image.size(), CV_MAKE_TYPE(read_image.type(), 4));
         // Notice: convertTo can't change the channels of Mat
@@ -181,4 +205,5 @@ private:
     int m_frame_count;
     std::stringstream m_frame_ss;
     Image<ushort, DeviceAllocator> tmp_depth;
+    std::ifstream m_rgbf, m_depthf;
 };

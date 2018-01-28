@@ -1,0 +1,21 @@
+{
+    "ConfigurationName": "rgbd_dataset_freiburg3_teddy",
+    "VolumeSize": [128, 128, 128],
+    "InputSize": [640, 480],
+    "MaxWeight":   100.0,
+    "NearPlane":   0.001,
+    "FusionThreshold": 0.1,
+
+    "RGBConfigFile":    "rgb.txt",
+    "DepthConfigFile":  "depth.txt",
+    "FrameIndexHead":   0,
+    "FrameIndexTail":   200,
+
+    "RGBFramePrefix":   "",
+    "DepthFramePrefix":   "",
+    "RGBFrameSuffix":   "",
+    "DepthFrameSuffix":   "",
+
+    "FramePath" :   "/home/drinkingcoder/Documents/Code/KinectFusion/data/rgbd_dataset_freiburg3_teddy/"
+
+}
