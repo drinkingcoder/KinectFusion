@@ -4,7 +4,7 @@ namespace {
 
 __global__ void mm2meters(Image<float> out, const Image<ushort> in) {
     const uint2 pixel = thr2pos2();
-    out[pixel] = in[pixel] / 6000.0f;
+    out[pixel] = in[pixel] / 1000.0f;
 }
 
 }
